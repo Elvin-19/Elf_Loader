@@ -40,7 +40,7 @@ $(TARGET):
 	@make -f artifacts/Makefile
 
 ifdef BUILD
-include /root/include/build.make
+include $(INCLUDE_DIR)/build.make
 else ifdef ANALYZE
-include /root/include/analyze.make
+include  $(INCLUDE_DIR)/analyze.make
 endif
