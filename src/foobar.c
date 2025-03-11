@@ -1,4 +1,4 @@
-#include "main.h"
+#include "setup.h"
 
 
 const char* foo_exported() {

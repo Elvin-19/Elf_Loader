@@ -1,4 +1,4 @@
-include Makefile
+include Makefile.config
 
 vpath %.c src
 
@@ -35,6 +35,9 @@ pipeline_build: $(TARGET)
 
 pipeline_analyze: analyze_artifacts
 	@echo "$(PURPLE)Project analyzed.$(END_COLOR)"
+
+$(TARGET):
+	@make -f artifacts/Makefile
 
 ifdef BUILD
 include /root/include/build.make
