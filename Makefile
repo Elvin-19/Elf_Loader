@@ -17,5 +17,22 @@ SRC_FILES=./src/isos_loader.c ./src/my_dl.c
 # Uncomment this and initialize it to the correct path(s) to your source files if your project sources are not located in `src`.
 #vpath %.c path/to/src
 
+CC=gcc
+CFLAGS=-I$(INCLUDE_DIR) -Wall -Wextra -Werror -g
+
+
 all:
-	@echo succes
+	@echo "Building ISOS project..."
+	@echo "Building the library..."
+	@make -C ./lib all
+	@echo "Building the loader..."
+	@make -C ./src all
+	@$(CC) $(CFLAGS) -o isos_loader $(SRC_FILES)
+	@echo "ISOS project built successfully."
+	
+clean: 
+	@echo "Cleaning ISOS project..."
+	@make -C ./lib clean
+	@make -C ./src clean
+	@rm -f isos_loader
+	@echo "ISOS project cleaned successfully."

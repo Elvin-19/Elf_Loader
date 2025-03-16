@@ -1,4 +1,0 @@
-all: 
-    gcc -fpic -Iinclude -shared -o lib/libfoobar.so src/foobar.c
-    gcc -Iinclude -Llib -o main main.c -lfoobar
-
