@@ -1,10 +1,6 @@
-const char* foo_exported() {
-    return "foo";
-}
+const char *foo_exported() { return "foo"; }
 
-const char* bar_exported() {
-    return "bar";
-}
+const char *bar_exported() { return "bar"; }
 
 /*
 const char* foo_imported() {

@@ -2,3 +2,5 @@
 *.o
 isos_loader
 doc/*
+
+.clang-format

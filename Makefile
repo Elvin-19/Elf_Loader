@@ -11,14 +11,14 @@ INCLUDE_DIR=./include
 # TODO
 # Initialize this variable with a space separated list of the paths to the loader source files (not the library).
 # You can use some make native function such as wildcard if you want.
-SRC_FILES=./src/isos_loader.c ./src/my_dl.c
+SRC_FILES=./src/isos_loader.c ./src/my_dl.c ./src/e_header_parser.c
 
 # TODO
 # Uncomment this and initialize it to the correct path(s) to your source files if your project sources are not located in `src`.
 #vpath %.c path/to/src
 
 CC=gcc
-CFLAGS=-I$(INCLUDE_DIR) -Wall -Wextra -Werror -g
+CFLAGS=-I$(INCLUDE_DIR) -O2 -Warray-bounds -Wsequence-point -Walloc-zero -Wnull-dereference -Wpointer-arith -Wcast-qual -Wcast-align=strict -g
 
 
 all:
