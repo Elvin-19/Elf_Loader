@@ -115,6 +115,7 @@ int main(int argc, char **argv) {
     /**
      * Step 3
      */
+
     elf64_phdr **phdr_tab = malloc(libExecHeader.phnum * sizeof(elf64_phdr *));
     phdr_parse(lib_fd, &libExecHeader, phdr_tab);
     if (arguments.debug) {
@@ -124,14 +125,15 @@ int main(int argc, char **argv) {
         }
     }
 
+    /**
+     * Cleaning the program context (memory, file descriptor, ...)
+     */
     free(arguments.functions);
     for (int i = 0; i < libExecHeader.phnum; i++) {
         free(phdr_tab[i]);
     }
     free(phdr_tab);
-
     close(lib_fd);
-
     dlclose(handle);
     return 0;
 }

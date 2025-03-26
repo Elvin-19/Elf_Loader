@@ -5,21 +5,20 @@ uint64_t phdr_parse(int lib_fd, elf64_ehdr *ehdr, elf64_phdr **phdr_tab) {
     elf64_phdr *phdr;
     lseek(lib_fd, ehdr->phoff, SEEK_SET);
     for (int i = 0; i < ehdr->phnum; i++) {
-
+        // Allocating memory for the current program header
         phdr = malloc(sizeof(elf64_phdr));
         if (phdr == NULL) {
             dprintf(STDERR_FILENO, "Error while allocating memory for the program header\n");
             exit(EXIT_FAILURE);
         }
-        int read_size = read(lib_fd, phdr, sizeof(elf64_phdr));
-        printf("%d, %d\n", i, read_size);
-        if (read_size != ehdr->phentsize) {
+        // Reading the content of the file into structure
+        if (read(lib_fd, phdr, sizeof(elf64_phdr)) != ehdr->phentsize) {
             dprintf(STDERR_FILENO,
-                    "Error while reading the ELF program header : Incorrect size (%d, %d) \n",
-                    read_size, ehdr->phentsize);
+                    "Error while reading the ELF program header : Incorrect size \n");
             exit(EXIT_FAILURE);
         }
         phdr_tab[i] = phdr;
+
         if (phdr_tab[i]->type == PT_LOAD) {
             // First program header
             if (!is_one_load) {
@@ -34,6 +33,7 @@ uint64_t phdr_parse(int lib_fd, elf64_ehdr *ehdr, elf64_phdr **phdr_tab) {
                 }
                 is_one_load = 1;
             }
+
             // We don't need to make the following checks for the first segment
             if (i == 0)
                 continue;
