@@ -1,3 +1,8 @@
+/**
+ * @file e_header_parser.c
+ * @brief Implementation of the ELF header parser
+ */
+
 #include "e_header_parser.h"
 
 elf_e_header parser_e_header(char *lib_path) {
@@ -8,26 +13,57 @@ elf_e_header parser_e_header(char *lib_path) {
     // Opening the library file
     lib_fd = open(lib_path, O_RDONLY);
     if (lib_fd == -1) {
-        fprintf(stderr, "Error while opening the library file\n");
+        perror("Error while opening the library file\n");
         exit(1);
     }
 
     // Allocating memory for the buffer
-    buffer = malloc(64);
+    buffer = malloc(sizeof(elf_e_header));
     if (buffer == NULL) {
-        fprintf(stderr, "Error while allocating memory\n");
+        perror("Error while allocating memory\n");
         exit(EXIT_FAILURE);
     }
 
     // Reading the content of the file
-    if (read(lib_fd, buffer, 64) <= 0) {
-        fprintf(stderr, "Error while reading the file\n");
+    if (read(lib_fd, buffer, sizeof(elf_e_header)) <= 0) {
+        perror("Error while reading the file\n");
         exit(EXIT_FAILURE);
     }
 
     // Copying the content of the buffer into the header
     memcpy(&headerLib, buffer, 64);
 
+    /*
+        Verifying the validity of the ELF file
+    */
+
+    // Making sure that the lib is ELF, 64bits, and dynamic
+
+    if (headerLib.ident[0] != 0x7f || headerLib.ident[1] != 'E' || headerLib.ident[2] != 'L' ||
+        headerLib.ident[3] != 'F') {
+        perror("Not a valid ELF formated library : The library is not an ELF file.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (headerLib.ident[4] != 2) {
+        perror("Not a valid ELF formated library : The library is not a 64bits ELF file.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (headerLib.type != 3) {
+        perror("Not a valid ELF formated library : The library is not a dynamic ELF file.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (sizeof(elf_e_header) != headerLib.ehsize) {
+        perror("Not a valid ELF formated library : The size of the header is not correct.\n");
+        exit(EXIT_FAILURE);
+    }
+    if (headerLib.phnum <= 0) {
+        perror("Not a valid ELF formated binary : The file doesn't contains any segments.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Freeing and closing stuff
     free(buffer);
     close(lib_fd);
     return headerLib;

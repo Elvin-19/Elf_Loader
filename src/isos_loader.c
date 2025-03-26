@@ -1,3 +1,8 @@
+/**
+ * @file isos_loader.c
+ * @brief Main file of the project
+ */
+
 #include <argp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -98,36 +103,6 @@ int main(int argc, char **argv) {
     elf_e_header libExecHeader = parser_e_header(arguments.lib);
     if (arguments.debug)
         print_e_header(&libExecHeader);
-
-    // Making sure that the lib is ELF, 64bits, and dynamic
-    if (libExecHeader.ident[0] != 0x7f || libExecHeader.ident[1] != 'E' ||
-        libExecHeader.ident[2] != 'L' || libExecHeader.ident[3] != 'F') {
-        fprintf(stderr, "Not a valid ELF formated library : The library is not "
-                        "an ELF file.\n");
-        return EXIT_FAILURE;
-    }
-    if (libExecHeader.ident[4] != 2) {
-        fprintf(stderr, "Not a valid ELF formated library : The library is not a "
-                        "64bits ELF file.\n");
-        return EXIT_FAILURE;
-    }
-    if (libExecHeader.type != 3) {
-        fprintf(stderr, "Not a valid ELF formated library : The library is not a "
-                        "dynamic ELF file.\n");
-        return EXIT_FAILURE;
-    }
-
-    if (sizeof(elf_e_header) != libExecHeader.ehsize) {
-        fprintf(stderr, "Not a valid ELF formated library : The size of the header "
-                        "is not correct.\n");
-        return EXIT_FAILURE;
-    }
-    if (libExecHeader.phnum <= 0) {
-        fprintf(stderr, "Not a valid ELF formated binary : The file doesn't "
-                        "contains any segments.\n");
-        return EXIT_FAILURE;
-    }
-    printf("The library is an ELF 64bits dynamic file\n");
 
     dlclose(handle);
     free(arguments.functions);
