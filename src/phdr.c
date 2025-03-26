@@ -5,7 +5,12 @@ uint64_t phdr_parse(int lib_fd, elf64_ehdr *ehdr, elf64_phdr **phdr_tab) {
     elf64_phdr *phdr;
     lseek(lib_fd, ehdr->phoff, SEEK_SET);
     for (int i = 0; i < ehdr->phnum; i++) {
+
         phdr = malloc(sizeof(elf64_phdr));
+        if (phdr == NULL) {
+            dprintf(STDERR_FILENO, "Error while allocating memory for the program header\n");
+            exit(EXIT_FAILURE);
+        }
         int read_size = read(lib_fd, phdr, sizeof(elf64_phdr));
         printf("%d, %d\n", i, read_size);
         if (read_size != ehdr->phentsize) {
