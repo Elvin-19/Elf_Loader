@@ -80,7 +80,8 @@ int main(int argc, char **argv) {
      */
     void *handle = my_dlopen(arguments.lib);
     if (handle == NULL) {
-        fprintf(stderr, "Error while loading the library\n");
+
+        dprintf(STDERR_FILENO, "Error while loading the library\n");
         return 1;
     }
     // Simply load the functions and call them
@@ -88,7 +89,7 @@ int main(int argc, char **argv) {
     for (int i = 0; i < arguments.nb_functions - 1; i++) {
         void *f = my_dlsym(handle, arguments.functions[i]);
         if (f == NULL) {
-            fprintf(stderr, "Error while loading the function %s\n", arguments.functions[i]);
+            dprintf(STDERR_FILENO, "Error while loading the function %s\n", arguments.functions[i]);
             return 1;
         }
         printf("Function %s loaded at %p\n", arguments.functions[i], f);

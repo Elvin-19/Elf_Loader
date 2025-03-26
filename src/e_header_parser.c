@@ -41,25 +41,30 @@ elf_e_header parser_e_header(char *lib_path) {
 
     if (headerLib.ident[0] != 0x7f || headerLib.ident[1] != 'E' || headerLib.ident[2] != 'L' ||
         headerLib.ident[3] != 'F') {
-        perror("Not a valid ELF formated library : The library is not an ELF file.\n");
+        dprintf(STDERR_FILENO,
+                "Not a valid ELF formated library : The library is not an ELF file.\n");
         exit(EXIT_FAILURE);
     }
 
     if (headerLib.ident[4] != 2) {
-        perror("Not a valid ELF formated library : The library is not a 64bits ELF file.\n");
+        dprintf(STDERR_FILENO,
+                "Not a valid ELF formated library : The library is not a 64bits ELF file.\n");
         exit(EXIT_FAILURE);
     }
     if (headerLib.type != 3) {
-        perror("Not a valid ELF formated library : The library is not a dynamic ELF file.\n");
+        dprintf(STDERR_FILENO,
+                "Not a valid ELF formated library : The library is not a dynamic ELF file.\n");
         exit(EXIT_FAILURE);
     }
 
     if (sizeof(elf_e_header) != headerLib.ehsize) {
-        perror("Not a valid ELF formated library : The size of the header is not correct.\n");
+        dprintf(STDERR_FILENO,
+                "Not a valid ELF formated library : The size of the header is not correct.\n");
         exit(EXIT_FAILURE);
     }
     if (headerLib.phnum <= 0) {
-        perror("Not a valid ELF formated binary : The file doesn't contains any segments.\n");
+        dprintf(STDERR_FILENO,
+                "Not a valid ELF formated binary : The file doesn't contains any segments.\n");
         exit(EXIT_FAILURE);
     }
 
