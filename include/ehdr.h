@@ -1,3 +1,5 @@
+#pragma once
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +25,7 @@ typedef struct {
     uint16_t shentsize;
     uint16_t shnum;
     uint16_t shstrndx;
-} elf_e_header;
+} elf64_ehdr;
 
-extern elf_e_header parser_e_header(char *lib_path);
-extern void print_e_header(elf_e_header *header);
+extern elf64_ehdr ehdr_parse(int lib_fd);
+extern void ehdr_print(elf64_ehdr *header);

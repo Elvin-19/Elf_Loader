@@ -3,39 +3,16 @@
  * @brief Implementation of the ELF header parser
  */
 
-#include "e_header_parser.h"
+#include "ehdr.h"
 
-elf_e_header parser_e_header(char *lib_path) {
-    int lib_fd;
-    elf_e_header headerLib;
-    char *buffer = NULL;
-
-    // Opening the library file
-    lib_fd = open(lib_path, O_RDONLY);
-    if (lib_fd == -1) {
-        perror("Error while opening the library file\n");
-        exit(1);
-    }
-
-    // Allocating memory for the buffer
-    /*buffer = malloc(sizeof(elf_e_header));
-    if (buffer == NULL) {
-        perror("Error while allocating memory\n");
-        exit(EXIT_FAILURE);
-    }*/
+elf64_ehdr ehdr_parse(int lib_fd) {
+    elf64_ehdr headerLib;
 
     // Reading the content of the file
-    if (read(lib_fd, &headerLib, sizeof(elf_e_header)) != sizeof(elf_e_header)) {
+    if (read(lib_fd, &headerLib, sizeof(elf64_ehdr)) != sizeof(elf64_ehdr)) {
         perror("Error while reading the ELF executable header\n");
         exit(EXIT_FAILURE);
     }
-
-    // Copying the content of the buffer into the header
-    // memcpy(&headerLib, buffer, 64);
-
-    /*
-        Verifying the validity of the ELF file
-    */
 
     // Making sure that the lib is ELF, 64bits, and dynamic
 
@@ -57,7 +34,7 @@ elf_e_header parser_e_header(char *lib_path) {
         exit(EXIT_FAILURE);
     }
 
-    if (sizeof(elf_e_header) != headerLib.ehsize) {
+    if (sizeof(elf64_ehdr) != headerLib.ehsize) {
         dprintf(STDERR_FILENO,
                 "Not a valid ELF formated library : The size of the header is not correct.\n");
         exit(EXIT_FAILURE);
@@ -68,13 +45,10 @@ elf_e_header parser_e_header(char *lib_path) {
         exit(EXIT_FAILURE);
     }
 
-    // Freeing and closing stuff
-    free(buffer);
-    close(lib_fd);
     return headerLib;
 }
 
-void print_e_header(elf_e_header *header) {
+void ehdr_print(elf64_ehdr *header) {
     printf("ELF Executable Header:\n");
     printf("Magic:   ");
     for (int i = 0; i < 16; i++)

@@ -11,7 +11,7 @@ INCLUDE_DIR=./include
 # TODO
 # Initialize this variable with a space separated list of the paths to the loader source files (not the library).
 # You can use some make native function such as wildcard if you want.
-SRC_FILES=./src/isos_loader.c ./src/my_dl.c ./src/e_header_parser.c
+SRC_FILES=./src/isos_loader.c ./src/my_dl.c ./src/ehdr.c ./src/phdr.c
 
 # TODO
 # Uncomment this and initialize it to the correct path(s) to your source files if your project sources are not located in `src`.

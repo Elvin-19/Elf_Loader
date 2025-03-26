@@ -7,9 +7,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "e_header_parser.h"
+#include "ehdr.h"
 #include "isos_loader.h"
 #include "my_dl.h"
+#include "phdr.h"
 
 const char *argp_program_version = "isos_loader (MAUBERT Elvin) 1.0";
 
@@ -100,11 +101,37 @@ int main(int argc, char **argv) {
     /**
      * Step 2
      */
-    elf_e_header libExecHeader = parser_e_header(arguments.lib);
+
+    int lib_fd = open(arguments.lib, O_RDONLY);
+    if (lib_fd == -1) {
+        perror("Error while opening the library file\n");
+        exit(EXIT_FAILURE);
+    }
+
+    elf64_ehdr libExecHeader = ehdr_parse(lib_fd);
     if (arguments.debug)
-        print_e_header(&libExecHeader);
+        ehdr_print(&libExecHeader);
+
+    /**
+     * Step 3
+     */
+    elf64_phdr **phdr_tab = malloc(libExecHeader.phnum * sizeof(elf64_phdr *));
+    phdr_parse(lib_fd, &libExecHeader, phdr_tab);
+    if (arguments.debug) {
+        for (int i = 0; i < libExecHeader.phnum; i++) {
+            printf("PHeader n°%d\n", i);
+            phdr_print(phdr_tab[i]);
+        }
+    }
+
+    free(arguments.functions);
+    for (int i = 0; i < libExecHeader.phnum; i++) {
+        free(phdr_tab[i]);
+    }
+    free(phdr_tab);
+
+    close(lib_fd);
 
     dlclose(handle);
-    free(arguments.functions);
     return 0;
 }
