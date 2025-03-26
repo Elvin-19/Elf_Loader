@@ -80,13 +80,12 @@ int main(int argc, char **argv) {
      */
     void *handle = my_dlopen(arguments.lib);
     if (handle == NULL) {
-
         dprintf(STDERR_FILENO, "Error while loading the library\n");
         return 1;
     }
     // Simply load the functions and call them
     // We assume that we load the foobar lib and its functions
-    for (int i = 0; i < arguments.nb_functions - 1; i++) {
+    for (int i = 0; i < arguments.nb_functions; i++) {
         void *f = my_dlsym(handle, arguments.functions[i]);
         if (f == NULL) {
             dprintf(STDERR_FILENO, "Error while loading the function %s\n", arguments.functions[i]);

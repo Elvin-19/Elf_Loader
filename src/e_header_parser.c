@@ -18,20 +18,20 @@ elf_e_header parser_e_header(char *lib_path) {
     }
 
     // Allocating memory for the buffer
-    buffer = malloc(sizeof(elf_e_header));
+    /*buffer = malloc(sizeof(elf_e_header));
     if (buffer == NULL) {
         perror("Error while allocating memory\n");
         exit(EXIT_FAILURE);
-    }
+    }*/
 
     // Reading the content of the file
-    if (read(lib_fd, buffer, sizeof(elf_e_header)) <= 0) {
-        perror("Error while reading the file\n");
+    if (read(lib_fd, &headerLib, sizeof(elf_e_header)) != sizeof(elf_e_header)) {
+        perror("Error while reading the ELF executable header\n");
         exit(EXIT_FAILURE);
     }
 
     // Copying the content of the buffer into the header
-    memcpy(&headerLib, buffer, 64);
+    // memcpy(&headerLib, buffer, 64);
 
     /*
         Verifying the validity of the ELF file
