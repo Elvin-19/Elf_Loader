@@ -2,6 +2,8 @@
 
 uint64_t phdr_parse(int lib_fd, elf64_ehdr *ehdr, elf64_phdr **phdr_tab) {
     int is_one_load = 0;
+    int index_first_load = -1;
+    int index_last_load = -1;
     elf64_phdr *phdr;
     lseek(lib_fd, ehdr->phoff, SEEK_SET);
     for (int i = 0; i < ehdr->phnum; i++) {
@@ -32,6 +34,7 @@ uint64_t phdr_parse(int lib_fd, elf64_ehdr *ehdr, elf64_phdr **phdr_tab) {
                     exit(EXIT_FAILURE);
                 }
                 is_one_load = 1;
+                index_first_load = i;
             }
 
             // We don't need to make the following checks for the first segment
@@ -56,15 +59,18 @@ uint64_t phdr_parse(int lib_fd, elf64_ehdr *ehdr, elf64_phdr **phdr_tab) {
                         "Not a valid binary : The file contains overlapping segments in memory.\n");
                 exit(EXIT_FAILURE);
             }
+            index_last_load = i;
         }
     }
-
+    printf("First load segment: %d\n", index_first_load);
+    printf("Last load segment: %d\n", index_last_load);
     if (!is_one_load) {
         dprintf(STDERR_FILENO,
                 "Not a valid binary : The file doesn't contains any loadable segments.\n");
         exit(EXIT_FAILURE);
     }
-    return 0;
+    return (phdr_tab[index_last_load]->vaddr + phdr_tab[index_last_load]->memsz) -
+           phdr_tab[index_first_load]->vaddr;
 }
 
 void phdr_print(elf64_phdr *header) {
