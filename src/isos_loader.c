@@ -4,9 +4,13 @@
  */
 
 #include <argp.h>
+#include <dlfcn.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
+#include "common.h"
 #include "ehdr.h"
 #include "isos_loader.h"
 #include "my_dl.h"
@@ -32,7 +36,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
     switch (key) {
     case 'd':
-        arguments->debug = 1;
+        arguments->debug = true;
         break;
     case ARGP_KEY_ARG:
         if (state->arg_num == 0) {
@@ -55,18 +59,21 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
 static struct argp argp = {options, parse_opt, args_doc, doc, 0, 0, 0};
 
-int main(int argc, char **argv) {
+bool debug = false;
 
+int main(int argc, char **argv) {
     /**
      * Arguments parsing
      */
     struct arguments arguments;
-    arguments.debug = 0;
     arguments.functions = malloc((argc - 1) * sizeof(char *));
     arguments.nb_functions = 0;
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
     arguments.nb_functions = argc - 2 - arguments.debug;
-    if (arguments.debug) {
+
+    debug = arguments.debug;
+
+    if (debug) {
         printf("Debug mode activated\n");
         printf("Library   : %s\n", arguments.lib);
         printf("Number of functions : %d\n", arguments.nb_functions);
@@ -82,7 +89,7 @@ int main(int argc, char **argv) {
     void *handle = my_dlopen(arguments.lib);
     if (handle == NULL) {
         dprintf(STDERR_FILENO, "Error while loading the library\n");
-        return 1;
+        exit(ERR_LOADER);
     }
     // Simply load the functions and call them
     // We assume that we load the foobar lib and its functions
@@ -90,9 +97,8 @@ int main(int argc, char **argv) {
         void *f = my_dlsym(handle, arguments.functions[i]);
         if (f == NULL) {
             dprintf(STDERR_FILENO, "Error while loading the function %s\n", arguments.functions[i]);
-            return 1;
+            exit(ERR_LOADER);
         }
-        printf("Function %s loaded at %p\n", arguments.functions[i], f);
         foobar_t func = (foobar_t) f;
         char *str = func();
         printf("Function %s returned : %s\n", arguments.functions[i], str);
@@ -105,11 +111,11 @@ int main(int argc, char **argv) {
     int lib_fd = open(arguments.lib, O_RDONLY);
     if (lib_fd == -1) {
         perror("Error while opening the library file\n");
-        exit(EXIT_FAILURE);
+        exit(ERR_FILE);
     }
 
     elf64_ehdr libExecHeader = ehdr_parse(lib_fd);
-    if (arguments.debug)
+    if (debug)
         ehdr_print(&libExecHeader);
 
     /**
@@ -118,7 +124,7 @@ int main(int argc, char **argv) {
 
     elf64_phdr **phdr_tab = malloc(libExecHeader.phnum * sizeof(elf64_phdr *));
     phdr_parse(lib_fd, &libExecHeader, phdr_tab);
-    if (arguments.debug) {
+    if (debug) {
         for (int i = 0; i < libExecHeader.phnum; i++) {
             printf("PHeader n°%d\n", i);
             phdr_print(phdr_tab[i]);
@@ -135,5 +141,5 @@ int main(int argc, char **argv) {
     free(phdr_tab);
     close(lib_fd);
     dlclose(handle);
-    return 0;
+    return EXIT_SUCCESS;
 }

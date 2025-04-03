@@ -3,6 +3,13 @@
  * @brief Implementation of the ELF header parser
  */
 
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "common.h"
 #include "ehdr.h"
 
 elf64_ehdr ehdr_parse(int lib_fd) {
@@ -11,7 +18,7 @@ elf64_ehdr ehdr_parse(int lib_fd) {
     // Reading the content of the file
     if (read(lib_fd, &headerLib, sizeof(elf64_ehdr)) != sizeof(elf64_ehdr)) {
         perror("Error while reading the ELF executable header\n");
-        exit(EXIT_FAILURE);
+        exit(ERR_FILE);
     }
 
     // Making sure that the lib is ELF, 64bits, and dynamic
@@ -20,29 +27,29 @@ elf64_ehdr ehdr_parse(int lib_fd) {
         headerLib.ident[3] != 'F') {
         dprintf(STDERR_FILENO,
                 "Not a valid ELF formated library : The library is not an ELF file.\n");
-        exit(EXIT_FAILURE);
+        exit(ERR_ELF_FORMAT);
     }
 
     if (headerLib.ident[4] != 2) {
         dprintf(STDERR_FILENO,
                 "Not a valid ELF formated library : The library is not a 64bits ELF file.\n");
-        exit(EXIT_FAILURE);
+        exit(ERR_ELF_FORMAT);
     }
     if (headerLib.type != 3) {
         dprintf(STDERR_FILENO,
                 "Not a valid ELF formated library : The library is not a dynamic ELF file.\n");
-        exit(EXIT_FAILURE);
+        exit(ERR_ELF_FORMAT);
     }
 
     if (sizeof(elf64_ehdr) != headerLib.ehsize) {
         dprintf(STDERR_FILENO,
                 "Not a valid ELF formated library : The size of the header is not correct.\n");
-        exit(EXIT_FAILURE);
+        exit(ERR_ELF_FORMAT);
     }
     if (headerLib.phnum <= 0) {
         dprintf(STDERR_FILENO,
                 "Not a valid ELF formated binary : The file doesn't contains any segments.\n");
-        exit(EXIT_FAILURE);
+        exit(ERR_ELF_FORMAT);
     }
 
     return headerLib;

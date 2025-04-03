@@ -1,6 +1,5 @@
 #pragma once
 
-#include <dlfcn.h>
 #include <stdio.h>
 
 extern void *my_dlopen(const char *name);

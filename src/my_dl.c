@@ -1,3 +1,5 @@
+#include <dlfcn.h>
+
 #include "my_dl.h"
 
 void *my_dlopen(const char *name) { return dlopen(name, 1); }

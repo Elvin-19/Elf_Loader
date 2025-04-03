@@ -1,10 +1,12 @@
 #pragma once
 
+#include <stdbool.h>
+
 struct arguments {
     char *lib;
     char **functions;
     int nb_functions;
-    int debug;
+    bool debug;
 };
 
 typedef char *(*foobar_t)();
