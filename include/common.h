@@ -7,6 +7,11 @@
 
 #include <stdbool.h>
 
+// Types
+typedef __uint16_t uint16_t;
+typedef __uint32_t uint32_t;
+typedef __uint64_t uint64_t;
+
 // Error code
 #define EXIT_SUCCESS 0
 #define EXIT_ERROR   1

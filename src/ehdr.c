@@ -9,7 +9,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "common.h"
 #include "ehdr.h"
 
 elf64_ehdr ehdr_parse(int lib_fd) {

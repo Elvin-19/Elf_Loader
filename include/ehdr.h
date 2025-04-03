@@ -1,8 +1,6 @@
 #pragma once
 
-typedef __uint16_t uint16_t;
-typedef __uint32_t uint32_t;
-typedef __uint64_t uint64_t;
+#include "common.h"
 
 typedef struct {
     unsigned char ident[16];

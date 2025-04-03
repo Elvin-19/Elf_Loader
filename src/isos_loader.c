@@ -122,10 +122,15 @@ int main(int argc, char **argv) {
      * Step 3
      */
 
-    elf64_phdr **phdr_tab = malloc(libExecHeader.phnum * sizeof(elf64_phdr *));
-    phdr_parse(lib_fd, &libExecHeader, phdr_tab);
+    // Count the number of loadable segments
+    int nb_load_seg = phdr_count_load_segments(lib_fd, &libExecHeader);
+    if (debug)
+        printf("Number of loadable segments : %d\n", nb_load_seg);
+
+    elf64_phdr **phdr_tab = malloc(nb_load_seg * sizeof(elf64_phdr *));
+    phdr_parse(lib_fd, nb_load_seg, &libExecHeader, phdr_tab);
     if (debug) {
-        for (int i = 0; i < libExecHeader.phnum; i++) {
+        for (int i = 0; i < nb_load_seg; i++) {
             printf("PHeader n°%d\n", i);
             phdr_print(phdr_tab[i]);
         }
@@ -135,7 +140,7 @@ int main(int argc, char **argv) {
      * Cleaning the program context (memory, file descriptor, ...)
      */
     free(arguments.functions);
-    for (int i = 0; i < libExecHeader.phnum; i++) {
+    for (int i = 0; i < nb_load_seg; i++) {
         free(phdr_tab[i]);
     }
     free(phdr_tab);
