@@ -1,5 +1,5 @@
 /**
- * @file e_header_parser.c
+ * @file ehdr.c
  * @brief Implementation of the ELF header parser
  */
 
@@ -55,22 +55,22 @@ elf64_ehdr ehdr_parse(int lib_fd) {
 }
 
 void ehdr_print(elf64_ehdr *header) {
-    printf("ELF Executable Header:\n");
-    printf("Magic:   ");
+    printf("%sELF Executable Header:\n", (debug ? "[DEBUG] " : ""));
+    printf("%s    Magic:   ", (debug ? "[DEBUG] " : ""));
     for (int i = 0; i < 16; i++)
         printf("%02x ", header->ident[i]);
     printf("\n");
-    printf("Type:                              %u\n", header->type);
-    printf("Machine:                           %u\n", header->machine);
-    printf("Version:                           %u\n", header->version);
-    printf("Entry point address:               %lu\n", header->entry);
-    printf("Start of program headers:          %lu\n", header->phoff);
-    printf("Start of section headers:          %lu\n", header->shoff);
-    printf("Flags:                             %u\n", header->flags);
-    printf("Size of this header:               %u\n", header->ehsize);
-    printf("Size of program headers:           %u\n", header->phentsize);
-    printf("Number of program headers:         %u\n", header->phnum);
-    printf("Size of section headers:           %u\n", header->shentsize);
-    printf("Number of section headers:         %u\n", header->shnum);
-    printf("Section header string table index: %u\n", header->shstrndx);
+    printf("%s    Type                       : %u\n", (debug ? "[DEBUG] " : ""), header->type);
+    printf("%s    Machine                    : %u\n", (debug ? "[DEBUG] " : ""), header->machine);
+    printf("%s    Version                    : %u\n", (debug ? "[DEBUG] " : ""), header->version);
+    printf("%s    Entry point address        : %lu\n", (debug ? "[DEBUG] " : ""), header->entry);
+    printf("%s    Start of program headers   : %lu\n", (debug ? "[DEBUG] " : ""), header->phoff);
+    printf("%s    Start of section headers   : %lu\n", (debug ? "[DEBUG] " : ""), header->shoff);
+    printf("%s    Flags                      : %u\n", (debug ? "[DEBUG] " : ""), header->flags);
+    printf("%s    Size of this header        : %u\n", (debug ? "[DEBUG] " : ""), header->ehsize);
+    printf("%s    Size of program headers    : %u\n", (debug ? "[DEBUG] " : ""), header->phentsize);
+    printf("%s    Number of program headers  : %u\n", (debug ? "[DEBUG] " : ""), header->phnum);
+    printf("%s    Size of section headers    : %u\n", (debug ? "[DEBUG] " : ""), header->shentsize);
+    printf("%s    Number of section headers  : %u\n", (debug ? "[DEBUG] " : ""), header->shnum);
+    printf("%s    Section hdr string tab idx : %u\n", (debug ? "[DEBUG] " : ""), header->shstrndx);
 }

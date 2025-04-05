@@ -1,3 +1,8 @@
+/**
+ * @file ehdr.h
+ * @brief Definitions used to manage ELF Executable Header
+ */
+
 #pragma once
 
 #include "common.h"

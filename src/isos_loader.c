@@ -15,6 +15,7 @@
 #include "isos_loader.h"
 #include "my_dl.h"
 #include "phdr.h"
+#include "segments_loader.h"
 
 const char *argp_program_version = "isos_loader (MAUBERT Elvin) 1.0";
 
@@ -36,6 +37,8 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
     switch (key) {
     case 'd':
+        printf("[DEBUG] Debug mode activated \n");
+        printf("[DEBUG] -----------\n");
         arguments->debug = true;
         break;
     case ARGP_KEY_ARG:
@@ -65,7 +68,7 @@ int main(int argc, char **argv) {
     /**
      * Arguments parsing
      */
-    struct arguments arguments;
+    struct arguments arguments = {.debug = false};
     arguments.functions = malloc((argc - 1) * sizeof(char *));
     arguments.nb_functions = 0;
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
@@ -73,14 +76,14 @@ int main(int argc, char **argv) {
 
     debug = arguments.debug;
 
-    if (debug) {
-        printf("Debug mode activated\n");
-        printf("Library   : %s\n", arguments.lib);
-        printf("Number of functions : %d\n", arguments.nb_functions);
-        printf("Functions :\n");
+    if (debug == true) {
+        printf("[DEBUG] Library   : %s\n", arguments.lib);
+        printf("[DEBUG] Number of functions : %d\n", arguments.nb_functions);
+        printf("[DEBUG] Functions :\n");
         for (int i = 0; i < arguments.nb_functions; i++) {
-            printf("  - %s\n", arguments.functions[i]);
+            printf("[DEBUG]     - %s\n", arguments.functions[i]);
         }
+        printf("[DEBUG] -----------\n");
     }
 
     /**
@@ -115,8 +118,11 @@ int main(int argc, char **argv) {
     }
 
     elf64_ehdr libExecHeader = ehdr_parse(lib_fd);
-    if (debug)
+    if (debug == true) {
+        printf("[DEBUG] Content of the executable header : \n");
         ehdr_print(&libExecHeader);
+        printf("[DEBUG] -----------\n");
+    }
 
     /**
      * Step 3
@@ -124,17 +130,27 @@ int main(int argc, char **argv) {
 
     // Count the number of loadable segments
     int nb_load_seg = phdr_count_load_segments(lib_fd, &libExecHeader);
-    if (debug)
-        printf("Number of loadable segments : %d\n", nb_load_seg);
+    if (debug == true) {
+        printf("[DEBUG] Number of loadable segments : %d\n", nb_load_seg);
+        printf("[DEBUG] -----------\n");
+    }
 
     elf64_phdr **phdr_tab = malloc(nb_load_seg * sizeof(elf64_phdr *));
-    phdr_parse(lib_fd, nb_load_seg, &libExecHeader, phdr_tab);
-    if (debug) {
+    uint64_t size_pt_loads = phdr_parse(lib_fd, nb_load_seg, &libExecHeader, phdr_tab);
+    if (debug == true) {
         for (int i = 0; i < nb_load_seg; i++) {
-            printf("PHeader n°%d\n", i);
+            printf("[DEBUG] Content of program header n°%d : \n", i);
             phdr_print(phdr_tab[i]);
         }
+        printf("[DEBUG] Size of the PT_LOAD segments : %lu\n", size_pt_loads);
+        printf("[DEBUG] -----------\n");
     }
+
+    /**
+     * Step 4
+     */
+    // Load the segments in the memory
+    load_segments(lib_fd, phdr_tab, nb_load_seg, size_pt_loads);
 
     /**
      * Cleaning the program context (memory, file descriptor, ...)
