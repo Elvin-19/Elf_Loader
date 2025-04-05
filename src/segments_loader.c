@@ -77,23 +77,18 @@ void load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t siz
 
         // It means that this is the bss segment, we init it at 0
         if (memsz > filesz) {
-            if ((void *) ((uint64_t) addr + filesz) != NULL && (memsz - filesz) > 0) {
-                memset((void *) ((uint64_t) addr + filesz), 0, memsz - filesz);
-            }
-            else {
-                perror("Error while initializing the bss segment");
-                exit(EXIT_ERROR);
+            // if ((void *) ((uint64_t) addr + filesz) != NULL && (memsz - filesz) > 0) {
+            //     memset((void *) ((uint64_t) addr + filesz), 0, memsz - filesz);
+            // }
+            for (uint64_t i = filesz; i < memsz; i++) {
+                *((char *) addr + i) = 0x00;
             }
         }
 
         // Adjust the start of the segment if it is not aligned
         if (extra_offset != 0x00) {
-            if (addr != NULL && (memsz - filesz) > 0) {
-                memset(addr, 0, memsz - filesz);
-            }
-            else {
-                perror("Error while padding befor the segment start");
-                exit(EXIT_ERROR);
+            for (uint64_t i = 0; i < extra_offset; i++) {
+                *((char *) addr + i) = 0x00;
             }
 
             addr = (void *) ((uint64_t) addr + extra_offset);
