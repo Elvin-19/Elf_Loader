@@ -15,6 +15,18 @@
 #include "ehdr.h"
 #include "segments_loader.h"
 
+static void print_segement_mapped(void *addr, uint64_t size) {
+    printf("%sMapped segment :", debug ? "[DEBUG] " : "");
+    unsigned char *ptr = (unsigned char *) addr;
+    for (uint64_t i = 0; i < size; i++) {
+        if (i % 16 == 0) {
+            printf("\n%s", debug ? "[DEBUG] " : "");
+        }
+        printf("%02x ", *(ptr + i));
+    }
+    printf("\n");
+}
+
 void load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t size_pt_loads) {
     // We take the size of a page
     size_t page_size = sysconf(_SC_PAGESIZE);
@@ -77,21 +89,17 @@ void load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t siz
 
         // It means that this is the bss segment, we init it at 0
         if (memsz > filesz) {
-            // if ((void *) ((uint64_t) addr + filesz) != NULL && (memsz - filesz) > 0) {
-            //     memset((void *) ((uint64_t) addr + filesz), 0, memsz - filesz);
-            // }
             for (uint64_t i = filesz; i < memsz; i++) {
-                *((char *) addr + i) = 0x00;
+                *((char *) addr + extra_offset + i) = 0x00;
             }
         }
 
         // Adjust the start of the segment if it is not aligned
         if (extra_offset != 0x00) {
+            // TRY PROTECT NONE
             for (uint64_t i = 0; i < extra_offset; i++) {
                 *((char *) addr + i) = 0x00;
             }
-
-            addr = (void *) ((uint64_t) addr + extra_offset);
         }
 
         if (debug == true) {
@@ -105,6 +113,7 @@ void load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t siz
             printf("[DEBUG] map_size       : 0x%lx\n", map_size);
             printf("[DEBUG] Final addr     : %p\n", addr);
             printf("[DEBUG] protections    : 0x%x\n", prot);
+            print_segement_mapped(addr, memsz);
             printf("[DEBUG] -----------\n");
         }
     }
