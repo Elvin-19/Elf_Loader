@@ -21,7 +21,7 @@ static uint32_t get_segment_protection_from_addr(uint64_t offset, elf64_phdr **p
 
 void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phdr **phdr_tab,
                         int nb_load_segments) {
-    elf64_phdr dyn_header;
+    elf64_phdr dyn_header = {0};
     elf64_dyn *dyn_entrie = NULL;
 
     elf64_rela *rela = NULL;
@@ -37,6 +37,10 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
             break;
         }
         lseek(lib_fd, ehdr->phentsize - sizeof(elf64_phdr), SEEK_CUR);
+    }
+    if (dyn_entrie == NULL) {
+        dprintf(STDERR_FILENO, "Error while reading the dynamic section\n");
+        exit(EXIT_ERROR);
     }
     if (debug == true) {
         printf("[ DEBUG ] Dynamic header found at offset %lx\n", dyn_header.offset);
@@ -65,6 +69,12 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
             break;
         }
     }
+
+    if (rela == NULL) {
+        dprintf(STDERR_FILENO, "Error while reading the .rela.dyn section\n");
+        exit(EXIT_ERROR);
+    }
+
     if (debug == true) {
         printf("[ DEBUG ] ----------- \n");
         printf("[ DEBUG ] Address of .rela.dyn section : %p\n", rela);
