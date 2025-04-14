@@ -15,6 +15,7 @@
 #include "isos_loader.h"
 #include "my_dl.h"
 #include "phdr.h"
+#include "relocation.h"
 #include "segments_loader.h"
 
 const char *argp_program_version = "isos_loader (MAUBERT Elvin) 1.0";
@@ -150,8 +151,14 @@ int main(int argc, char **argv) {
      * Step 4
      */
     // Load the segments in the memory
-    load_segments(lib_fd, phdr_tab, nb_load_seg, size_pt_loads);
+    void *load_addr = load_segments(lib_fd, phdr_tab, nb_load_seg, size_pt_loads);
+    printf("Segments loaded in memory at address : %p\n", load_addr);
 
+    /**
+     * Step 5
+     */
+    // TODO
+    dynamic_relocation(lib_fd, &libExecHeader, load_addr, phdr_tab, nb_load_seg);
     /**
      * Cleaning the program context (memory, file descriptor, ...)
      */

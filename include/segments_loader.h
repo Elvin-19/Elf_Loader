@@ -6,4 +6,4 @@
 
 #include "phdr.h"
 
-void load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t size_pt_loads);
+void *load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t size_pt_loads);

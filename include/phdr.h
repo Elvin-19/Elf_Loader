@@ -8,7 +8,8 @@
 
 #include "ehdr.h"
 
-#define PT_LOAD 1 /* Loadable program segment */
+#define PT_LOAD    1 /* Loadable program segment */
+#define PT_DYNAMIC 2 /* Dynamic linking information */
 
 typedef struct {
     uint32_t type;

@@ -12,6 +12,8 @@ typedef __uint16_t uint16_t;
 typedef __uint32_t uint32_t;
 typedef __uint64_t uint64_t;
 
+typedef __int64_t int64_t;
+
 // Protections flags
 #define PF_X 0x1
 #define PF_W 0x2

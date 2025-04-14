@@ -27,7 +27,7 @@ static void print_segement_mapped(void *addr, uint64_t size) {
     printf("\n");
 }
 
-void load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t size_pt_loads) {
+void *load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t size_pt_loads) {
     // We take the size of a page
     size_t page_size = sysconf(_SC_PAGESIZE);
 
@@ -113,8 +113,9 @@ void load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t siz
             printf("[DEBUG] map_size       : 0x%lx\n", map_size);
             printf("[DEBUG] Final addr     : %p\n", addr);
             printf("[DEBUG] protections    : 0x%x\n", prot);
-            print_segement_mapped(addr, memsz);
+            print_segement_mapped((void *) ((uint64_t) addr + extra_offset), memsz);
             printf("[DEBUG] -----------\n");
         }
     }
+    return base_addr;
 }
