@@ -16,11 +16,11 @@
 #include "segments_loader.h"
 
 static void print_segement_mapped(void *addr, uint64_t size) {
-    printf("%sMapped segment :", debug ? "[DEBUG] " : "");
+    printf("%sMapped segment :", debug ? "[ DEBUG ] " : "");
     unsigned char *ptr = (unsigned char *) addr;
     for (uint64_t i = 0; i < size; i++) {
         if (i % 16 == 0) {
-            printf("\n%s", debug ? "[DEBUG] " : "");
+            printf("\n%s", debug ? "[ DEBUG ] " : "");
         }
         printf("%02x ", *(ptr + i));
     }
@@ -44,12 +44,12 @@ void *load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t si
     }
 
     if (debug == true) {
-        printf("[DEBUG] ----------- START OF MAPPING -----------\n");
-        printf("[DEBUG] Page size     : %lx\n", page_size);
-        printf("[DEBUG] size_pt_loads : %lx\n", size_pt_loads);
-        printf("[DEBUG] Total size    : %lx\n", alligned_size);
-        printf("[DEBUG] Base address  : 0x%p\n", base_addr);
-        printf("[DEBUG] ----------- \n");
+        printf("[ DEBUG ] ----------- START OF MAPPING -----------\n");
+        printf("[ DEBUG ] Page size     : %lx\n", page_size);
+        printf("[ DEBUG ] size_pt_loads : %lx\n", size_pt_loads);
+        printf("[ DEBUG ] Total size    : %lx\n", alligned_size);
+        printf("[ DEBUG ] Base address  : 0x%p\n", base_addr);
+        printf("[ DEBUG ] ----------- \n");
     }
 
     for (int i = 0; i < nb_phdr; i++) {
@@ -103,18 +103,18 @@ void *load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t si
         }
 
         if (debug == true) {
-            printf("[DEBUG] vaddr          : 0x%lx\n", vaddr);
-            printf("[DEBUG] memsz          : 0x%lx\n", memsz);
-            printf("[DEBUG] offset         : 0x%lx\n", offset);
-            printf("[DEBUG] filesz         : 0x%lx\n", filesz);
-            printf("[DEBUG] alligned_vaddr : 0x%lx\n", alligned_vaddr);
-            printf("[DEBUG] allign_offset  : 0x%lx\n", allign_offset);
-            printf("[DEBUG] extra_offset   : 0x%lx\n", extra_offset);
-            printf("[DEBUG] map_size       : 0x%lx\n", map_size);
-            printf("[DEBUG] Final addr     : %p\n", addr);
-            printf("[DEBUG] protections    : 0x%x\n", prot);
+            printf("[ DEBUG ] vaddr          : 0x%lx\n", vaddr);
+            printf("[ DEBUG ] memsz          : 0x%lx\n", memsz);
+            printf("[ DEBUG ] offset         : 0x%lx\n", offset);
+            printf("[ DEBUG ] filesz         : 0x%lx\n", filesz);
+            printf("[ DEBUG ] alligned_vaddr : 0x%lx\n", alligned_vaddr);
+            printf("[ DEBUG ] allign_offset  : 0x%lx\n", allign_offset);
+            printf("[ DEBUG ] extra_offset   : 0x%lx\n", extra_offset);
+            printf("[ DEBUG ] map_size       : 0x%lx\n", map_size);
+            printf("[ DEBUG ] Final addr     : %p\n", addr);
+            printf("[ DEBUG ] protections    : 0x%x\n", prot);
             print_segement_mapped((void *) ((uint64_t) addr + extra_offset), memsz);
-            printf("[DEBUG] -----------\n");
+            printf("[ DEBUG ] -----------\n");
         }
     }
     return base_addr;

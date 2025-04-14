@@ -39,16 +39,16 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
         lseek(lib_fd, ehdr->phentsize - sizeof(elf64_phdr), SEEK_CUR);
     }
     if (debug == true) {
-        printf("[DEBUG] Dynamic header found at offset %lx\n", dyn_header.offset);
+        printf("[ DEBUG ] Dynamic header found at offset %lx\n", dyn_header.offset);
     }
 
     // Loop over all the enrties in the Dynamic section
     if (debug == true) {
-        printf("[DEBUG] ----------- LIST OF DYNAMIC ENTRIES -----------\n");
+        printf("[ DEBUG ] ----------- LIST OF DYNAMIC ENTRIES -----------\n");
     }
     for (elf64_dyn *current = dyn_entrie; current->d_tag != DT_NULL; current++) {
         if (debug == true) {
-            printf("[DEBUG] Dynamic entry: 0x%lx , Value 0x%lx\n", current->d_tag,
+            printf("[ DEBUG ] Dynamic entry: 0x%lx , Value 0x%lx\n", current->d_tag,
                    current->d_un.d_val);
         }
         switch (current->d_tag) {
@@ -66,18 +66,18 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
         }
     }
     if (debug == true) {
-        printf("[DEBUG] ----------- \n");
-        printf("[DEBUG] Address of .rela.dyn section : %p\n", rela);
-        printf("[DEBUG] Nb of .rela.dyn entries : %ld\n", rela_size / rela_entry_size);
+        printf("[ DEBUG ] ----------- \n");
+        printf("[ DEBUG ] Address of .rela.dyn section : %p\n", rela);
+        printf("[ DEBUG ] Nb of .rela.dyn entries : %ld\n", rela_size / rela_entry_size);
     }
 
     // Loop over rela entries
     for (int i = 0; i < (int) (rela_size / rela_entry_size); i++) {
         if ((rela[i].r_info == R_X86_64_RELATIVE) || (rela[i].r_info == R_X86_64_RELATIVE)) {
-            printf("[DEBUG] I'm IN %d \n", i);
-            printf("[DEBUG] r_offset : 0x%lx\n", rela[i].r_offset);
-            printf("[DEBUG] r_info   : 0x%lx\n", rela[i].r_info);
-            printf("[DEBUG] r_addend : 0x%lx\n", rela[i].r_addend);
+            printf("[ DEBUG ] I'm IN %d \n", i);
+            printf("[ DEBUG ] r_offset : 0x%lx\n", rela[i].r_offset);
+            printf("[ DEBUG ] r_info   : 0x%lx\n", rela[i].r_info);
+            printf("[ DEBUG ] r_addend : 0x%lx\n", rela[i].r_addend);
             uint64_t new_addr = (uint64_t) load_addr + rela[i].r_offset;
             uint64_t new_val = (uint64_t) load_addr + rela[i].r_addend;
 

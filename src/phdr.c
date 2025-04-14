@@ -96,12 +96,12 @@ uint64_t phdr_parse(int lib_fd, int nb_load_seg, elf64_ehdr *ehdr, elf64_phdr **
 }
 
 void phdr_print(elf64_phdr *header) {
-    printf("%s    Type             : 0x%x\n", (debug ? "[DEBUG] " : ""), header->type);
-    printf("%s    Flags            : 0x%x\n", (debug ? "[DEBUG] " : ""), header->flags);
-    printf("%s    Offset           : 0x%lx\n", (debug ? "[DEBUG] " : ""), header->offset);
-    printf("%s    Virtual address  : 0x%lx\n", (debug ? "[DEBUG] " : ""), header->vaddr);
-    printf("%s    Physical address : 0x%lx\n", (debug ? "[DEBUG] " : ""), header->paddr);
-    printf("%s    File size        : 0x%lx\n", (debug ? "[DEBUG] " : ""), header->filesz);
-    printf("%s    Memory size      : 0x%lx\n", (debug ? "[DEBUG] " : ""), header->memsz);
-    printf("%s    Alignment        : 0x%lx\n", (debug ? "[DEBUG] " : ""), header->align);
+    printf("%s    Type             : 0x%x\n", (debug ? "[ DEBUG ] " : ""), header->type);
+    printf("%s    Flags            : 0x%x\n", (debug ? "[ DEBUG ] " : ""), header->flags);
+    printf("%s    Offset           : 0x%lx\n", (debug ? "[ DEBUG ] " : ""), header->offset);
+    printf("%s    Virtual address  : 0x%lx\n", (debug ? "[ DEBUG ] " : ""), header->vaddr);
+    printf("%s    Physical address : 0x%lx\n", (debug ? "[ DEBUG ] " : ""), header->paddr);
+    printf("%s    File size        : 0x%lx\n", (debug ? "[ DEBUG ] " : ""), header->filesz);
+    printf("%s    Memory size      : 0x%lx\n", (debug ? "[ DEBUG ] " : ""), header->memsz);
+    printf("%s    Alignment        : 0x%lx\n", (debug ? "[ DEBUG ] " : ""), header->align);
 }
