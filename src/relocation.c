@@ -22,10 +22,10 @@ static uint32_t get_segment_protection_from_addr(uint64_t offset, elf64_phdr **p
 void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phdr **phdr_tab,
                         int nb_load_segments) {
     elf64_phdr dyn_header;
-    elf64_dyn *dyn_entrie;
+    elf64_dyn *dyn_entrie = NULL;
 
     elf64_rela *rela = NULL;
-    size_t rela_size;
+    size_t rela_size = sizeof(elf64_rela);
     size_t rela_entry_size = sizeof(elf64_rela);
 
     // Find the dynamic header
