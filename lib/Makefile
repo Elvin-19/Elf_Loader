@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -fPIC -Wall -Wextra -nostdlib -I../include
+CFLAGS = -fPIC -Wall -Wextra -nostdlib -fvisibility=hidden -I../include
 LDFLAGS = -shared
 TARGET = libfoobar.so
 SRCS = $(wildcard *.c)
@@ -7,11 +7,9 @@ OBJS = $(SRCS:.c=.o)
 
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^
+$(TARGET): $(SRCS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -Wl,-e,entry
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJS) $(TARGET)

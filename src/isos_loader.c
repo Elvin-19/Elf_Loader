@@ -90,6 +90,7 @@ int main(int argc, char **argv) {
     /**
      * Loading the library and the functions
      */
+
     void *handle = my_dlopen(arguments.lib);
     if (handle == NULL) {
         dprintf(STDERR_FILENO, "Error while loading the library\n");
@@ -108,66 +109,8 @@ int main(int argc, char **argv) {
         printf("Function %s returned : %s\n", arguments.functions[i], str);
     }
 
-    /**
-     * Step 2
-     */
-
-    int lib_fd = open(arguments.lib, O_RDONLY);
-    if (lib_fd == -1) {
-        perror("Error while opening the library file\n");
-        exit(ERR_FILE);
-    }
-
-    elf64_ehdr libExecHeader = ehdr_parse(lib_fd);
-    if (debug == true) {
-        printf("[ DEBUG ] Content of the executable header : \n");
-        ehdr_print(&libExecHeader);
-        printf("[ DEBUG ] -----------\n");
-    }
-
-    /**
-     * Step 3
-     */
-
-    // Count the number of loadable segments
-    int nb_load_seg = phdr_count_load_segments(lib_fd, &libExecHeader);
-    if (debug == true) {
-        printf("[ DEBUG ] Number of loadable segments : %d\n", nb_load_seg);
-        printf("[ DEBUG ] -----------\n");
-    }
-
-    elf64_phdr **phdr_tab = malloc(nb_load_seg * sizeof(elf64_phdr *));
-    uint64_t size_pt_loads = phdr_parse(lib_fd, nb_load_seg, &libExecHeader, phdr_tab);
-    if (debug == true) {
-        for (int i = 0; i < nb_load_seg; i++) {
-            printf("[ DEBUG ] Content of program header n°%d : \n", i);
-            phdr_print(phdr_tab[i]);
-        }
-        printf("[ DEBUG ] Size of the PT_LOAD segments : %lu\n", size_pt_loads);
-        printf("[ DEBUG ] -----------\n");
-    }
-
-    /**
-     * Step 4
-     */
-    // Load the segments in the memory
-    void *load_addr = load_segments(lib_fd, phdr_tab, nb_load_seg, size_pt_loads);
-    printf("Segments loaded in memory at address : %p\n", load_addr);
-
-    /**
-     * Step 5
-     */
-    // TODO
-    dynamic_relocation(lib_fd, &libExecHeader, load_addr, phdr_tab, nb_load_seg);
-    /**
-     * Cleaning the program context (memory, file descriptor, ...)
-     */
     free(arguments.functions);
-    for (int i = 0; i < nb_load_seg; i++) {
-        free(phdr_tab[i]);
-    }
-    free(phdr_tab);
-    close(lib_fd);
-    dlclose(handle);
+
+    // dlclose(handle);
     return EXIT_SUCCESS;
 }

@@ -84,10 +84,12 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
     // Loop over rela entries
     for (int i = 0; i < (int) (rela_size / rela_entry_size); i++) {
         if ((rela[i].r_info == R_X86_64_RELATIVE) || (rela[i].r_info == R_X86_64_RELATIVE)) {
-            printf("[ DEBUG ] I'm IN %d \n", i);
-            printf("[ DEBUG ] r_offset : 0x%lx\n", rela[i].r_offset);
-            printf("[ DEBUG ] r_info   : 0x%lx\n", rela[i].r_info);
-            printf("[ DEBUG ] r_addend : 0x%lx\n", rela[i].r_addend);
+            if (debug == true) {
+                printf("[ DEBUG ] I'm IN %d \n", i);
+                printf("[ DEBUG ] r_offset : 0x%lx\n", rela[i].r_offset);
+                printf("[ DEBUG ] r_info   : 0x%lx\n", rela[i].r_info);
+                printf("[ DEBUG ] r_addend : 0x%lx\n", rela[i].r_addend);
+            }
             uint64_t new_addr = (uint64_t) load_addr + rela[i].r_offset;
             uint64_t new_val = (uint64_t) load_addr + rela[i].r_addend;
 
