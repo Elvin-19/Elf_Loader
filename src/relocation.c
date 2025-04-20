@@ -96,7 +96,8 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
             uint32_t prot =
                 get_segment_protection_from_addr(rela[i].r_offset, phdr_tab, nb_load_segments);
             if (prot & PF_W) {
-                memcpy((void *) new_addr, &new_val, sizeof(uint64_t));
+                // memcpy((void *) new_addr, &new_val, sizeof(uint64_t));
+                *(uint64_t *) new_addr = new_val;
             }
             else {
                 uint64_t alligned_addr = new_addr - (new_addr % sysconf(_SC_PAGESIZE));
@@ -105,7 +106,8 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
                     perror("Error while changing the protection");
                     exit(EXIT_ERROR);
                 }
-                memcpy((void *) new_addr, &new_val, sizeof(uint64_t));
+                // memcpy((void *) new_addr, &new_val, sizeof(uint64_t));
+                *(uint64_t *) new_addr = new_val;
                 if (mprotect((void *) alligned_addr, sysconf(_SC_PAGESIZE), prot) == -1) {
                     perror("Error while changing the protection");
                     exit(EXIT_ERROR);

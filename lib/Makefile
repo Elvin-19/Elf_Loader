@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -fPIC -Wall -Wextra -nostdlib -fvisibility=hidden -I../include
+CFLAGS = -fPIC -nostdlib -fvisibility=hidden
 LDFLAGS = -shared
 TARGET = libfoobar.so
 SRCS = $(wildcard *.c)
