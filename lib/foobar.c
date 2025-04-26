@@ -1,6 +1,6 @@
-const char *foo_exported() { return "foo"; }
+const char *foo_exported() { return "foo_exported"; }
 
-const char *bar_exported() { return "bar"; }
+const char *bar_exported() { return "bar_exported"; }
 
 // Personallised symbol table
 struct my_symtab {
@@ -9,11 +9,11 @@ struct my_symtab {
 };
 
 struct my_symtab table = {
-    .foo_exported = foo_exported,
-    .bar_exported = bar_exported,
+    foo_exported,
+    bar_exported,
 };
 
-__attribute__((section(".entry"))) struct my_symtab *entry = &table;
+struct my_symtab *entry = &table;
 
 /*
 const char* foo_imported() {

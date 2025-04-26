@@ -46,7 +46,7 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
         printf("[ DEBUG ] Dynamic header found at offset %lx\n", dyn_header.offset);
     }
 
-    // Loop over all the enrties in the Dynamic section
+    // Loop over all the entries in the Dynamic section
     if (debug == true) {
         printf("[ DEBUG ] ----------- LIST OF DYNAMIC ENTRIES -----------\n");
     }
@@ -67,6 +67,7 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
             break;
         default:
             break;
+            // CHAMP RELA_COUNT
         }
     }
 
@@ -83,7 +84,7 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
 
     // Loop over rela entries
     for (int i = 0; i < (int) (rela_size / rela_entry_size); i++) {
-        if ((rela[i].r_info == R_X86_64_RELATIVE) || (rela[i].r_info == R_X86_64_RELATIVE)) {
+        if ((rela[i].r_info == R_X86_64_RELATIVE) || (rela[i].r_info == R_AARCH64_RELATIVE)) {
             if (debug == true) {
                 printf("[ DEBUG ] I'm IN %d \n", i);
                 printf("[ DEBUG ] r_offset : 0x%lx\n", rela[i].r_offset);
@@ -96,7 +97,6 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
             uint32_t prot =
                 get_segment_protection_from_addr(rela[i].r_offset, phdr_tab, nb_load_segments);
             if (prot & PF_W) {
-                // memcpy((void *) new_addr, &new_val, sizeof(uint64_t));
                 *(uint64_t *) new_addr = new_val;
             }
             else {
@@ -106,8 +106,9 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
                     perror("Error while changing the protection");
                     exit(EXIT_ERROR);
                 }
-                // memcpy((void *) new_addr, &new_val, sizeof(uint64_t));
+
                 *(uint64_t *) new_addr = new_val;
+
                 if (mprotect((void *) alligned_addr, sysconf(_SC_PAGESIZE), prot) == -1) {
                     perror("Error while changing the protection");
                     exit(EXIT_ERROR);

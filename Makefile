@@ -22,6 +22,7 @@ CFLAGS=-I$(INCLUDE_DIR) -O2 -Warray-bounds -Wsequence-point -Walloc-zero -Wnull-
 
 
 all:
+	@make clean
 	@echo "Building ISOS project..."
 	@echo "Building the library..."
 	@make -C ./lib all

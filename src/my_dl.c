@@ -12,8 +12,6 @@
 #include "relocation.h"
 #include "segments_loader.h"
 
-static struct my_symtab *dynsymtab = NULL;
-
 void *my_dlopen(const char *name) {
     // Opening the libraty file
     int lib_fd = open(name, O_RDONLY);
@@ -60,7 +58,7 @@ void *my_dlopen(const char *name) {
     uint64_t *entry_ptr =
         (uint64_t *) ((uint64_t) load_addr + (libExecHeader.entry - phdr_tab[0]->vaddr));
 
-    dynsymtab = (struct my_symtab *) *entry_ptr;
+    struct my_symtab *dynsymtab = (struct my_symtab *) *entry_ptr;
     if (debug == true) {
         printf("[ DEBUG ] Entry pointer VA (from e_entry) : 0x%lx\n", libExecHeader.entry);
         printf("[ DEBUG ] Pointer to entry symbol table : %p\n", (void *) entry_ptr);
@@ -80,8 +78,7 @@ void *my_dlopen(const char *name) {
 }
 void *my_dlsym(void *handle, const char *name) {
     struct my_symtab *tab = (struct my_symtab *) handle;
-    if (!dynsymtab)
-        return NULL;
+
     if (strcmp(name, "foo_exported") == 0)
         return tab->foo_exported;
     if (strcmp(name, "bar_exported") == 0)
