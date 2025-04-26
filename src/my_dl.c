@@ -5,7 +5,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "common.h"
 #include "ehdr.h"
 #include "my_dl.h"
 #include "phdr.h"
@@ -17,7 +16,7 @@ void *my_dlopen(const char *name) {
     int lib_fd = open(name, O_RDONLY);
     if (lib_fd == -1) {
         perror("Error while opening the library file\n");
-        exit(ERR_FILE);
+        exit(ERR_LOADER);
     }
 
     // Parsing its executable header
@@ -57,8 +56,8 @@ void *my_dlopen(const char *name) {
     // Get the personalised symbol table
     uint64_t *entry_ptr =
         (uint64_t *) ((uint64_t) load_addr + (libExecHeader.entry - phdr_tab[0]->vaddr));
-
     struct my_symtab *dynsymtab = (struct my_symtab *) *entry_ptr;
+
     if (debug == true) {
         printf("[ DEBUG ] Entry pointer VA (from e_entry) : 0x%lx\n", libExecHeader.entry);
         printf("[ DEBUG ] Pointer to entry symbol table : %p\n", (void *) entry_ptr);

@@ -5,7 +5,6 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include "phdr.h"
 #include "relocation.h"
 
 static uint32_t get_segment_protection_from_addr(uint64_t offset, elf64_phdr **phdr_tab,
@@ -21,14 +20,18 @@ static uint32_t get_segment_protection_from_addr(uint64_t offset, elf64_phdr **p
 
 void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phdr **phdr_tab,
                         int nb_load_segments) {
+
+    size_t page_size = sysconf(_SC_PAGESIZE);
+
     elf64_phdr dyn_header = {0};
     elf64_dyn *dyn_entrie = NULL;
 
     elf64_rela *rela = NULL;
     size_t rela_size = sizeof(elf64_rela);
     size_t rela_entry_size = sizeof(elf64_rela);
+    uint64_t rela_count = 0;
 
-    // Find the dynamic header
+    // Loop over all the program headers until we find the dynamic one
     lseek(lib_fd, ehdr->phoff, SEEK_SET);
     for (int i = 0; i < ehdr->phnum; i++) {
         read(lib_fd, &dyn_header, sizeof(elf64_phdr));
@@ -40,8 +43,9 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
     }
     if (dyn_entrie == NULL) {
         dprintf(STDERR_FILENO, "Error while reading the dynamic section\n");
-        exit(EXIT_ERROR);
+        exit(ERR_ELF_RELA);
     }
+
     if (debug == true) {
         printf("[ DEBUG ] Dynamic header found at offset %lx\n", dyn_header.offset);
     }
@@ -65,15 +69,22 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
         case DT_RELAENT:
             rela_entry_size = current->d_un.d_val;
             break;
+        case DT_RELACOUNT:
+            rela_count = current->d_un.d_val;
+            break;
         default:
             break;
-            // CHAMP RELA_COUNT
         }
     }
 
     if (rela == NULL) {
         dprintf(STDERR_FILENO, "Error while reading the .rela.dyn section\n");
-        exit(EXIT_ERROR);
+        exit(ERR_ELF_RELA);
+    }
+
+    // If the field DT_RELACOUNT is not found, we comput it manually
+    if (rela_count == 0) {
+        rela_count = rela_size / rela_entry_size;
     }
 
     if (debug == true) {
@@ -83,35 +94,35 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
     }
 
     // Loop over rela entries
-    for (int i = 0; i < (int) (rela_size / rela_entry_size); i++) {
+    for (int i = 0; i < rela_count; i++) {
         if ((rela[i].r_info == R_X86_64_RELATIVE) || (rela[i].r_info == R_AARCH64_RELATIVE)) {
             if (debug == true) {
-                printf("[ DEBUG ] I'm IN %d \n", i);
                 printf("[ DEBUG ] r_offset : 0x%lx\n", rela[i].r_offset);
                 printf("[ DEBUG ] r_info   : 0x%lx\n", rela[i].r_info);
-                printf("[ DEBUG ] r_addend : 0x%lx\n", rela[i].r_addend);
+                printf("[ DEBUG ] r_addend : 0x%lx\n[ DEBUG ]\n", rela[i].r_addend);
             }
             uint64_t new_addr = (uint64_t) load_addr + rela[i].r_offset;
             uint64_t new_val = (uint64_t) load_addr + rela[i].r_addend;
 
             uint32_t prot =
                 get_segment_protection_from_addr(rela[i].r_offset, phdr_tab, nb_load_segments);
+            // Perform the relocation if the write protection is set
             if (prot & PF_W) {
                 *(uint64_t *) new_addr = new_val;
             }
+            // Set the write protection and perform the relocation
             else {
-                uint64_t alligned_addr = new_addr - (new_addr % sysconf(_SC_PAGESIZE));
-                if (mprotect((void *) alligned_addr, sysconf(_SC_PAGESIZE), prot | PROT_WRITE) ==
-                    -1) {
+                uint64_t alligned_addr = new_addr - (new_addr % page_size);
+                if (mprotect((void *) alligned_addr, page_size, PROT_WRITE) == -1) {
                     perror("Error while changing the protection");
-                    exit(EXIT_ERROR);
+                    exit(ERR_ELF_RELA);
                 }
 
                 *(uint64_t *) new_addr = new_val;
 
-                if (mprotect((void *) alligned_addr, sysconf(_SC_PAGESIZE), prot) == -1) {
+                if (mprotect((void *) alligned_addr, page_size, prot) == -1) {
                     perror("Error while changing the protection");
-                    exit(EXIT_ERROR);
+                    exit(ERR_ELF_RELA);
                 }
             }
         }

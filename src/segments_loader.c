@@ -11,10 +11,14 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "common.h"
-#include "ehdr.h"
 #include "segments_loader.h"
 
+/**
+ * @fn print_segement_mapped
+ * @brief Print the content of the mapped segment
+ * @param addr Address of the mapped segment
+ * @param size Size of the mapped segment
+ */
 static void print_segement_mapped(void *addr, uint64_t size) {
     printf("%sMapped segment :", debug ? "[ DEBUG ] " : "");
     unsigned char *ptr = (unsigned char *) addr;
@@ -32,7 +36,7 @@ void *load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t si
     size_t page_size = sysconf(_SC_PAGESIZE);
 
     // We allign the size to the page size
-    // NB: This is "useless" because mmap allocate automatically the full page
+    // NB: This is not necessary since mmap allocate automatically the full page
     size_t alligned_size = size_pt_loads + (page_size - (size_pt_loads % page_size));
 
     void *base_addr =
@@ -40,7 +44,7 @@ void *load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t si
 
     if (base_addr == MAP_FAILED) {
         perror("Error while mapping the memory");
-        exit(EXIT_ERROR);
+        exit(ERR_ELF_SEG_LOAD);
     }
 
     if (debug == true) {
@@ -74,7 +78,7 @@ void *load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t si
         if (addr == MAP_FAILED) {
             perror("Error while mapping the memory");
             printf("Ernno = %d\n", errno);
-            exit(EXIT_ERROR);
+            exit(ERR_ELF_SEG_LOAD);
         }
 
         // Apply the protection
@@ -84,7 +88,7 @@ void *load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t si
         prot |= (p_headers[i]->flags & PF_X) ? PROT_EXEC : 0;
         if (mprotect(addr, map_size, prot) == -1) {
             perror("Error while applying the protection");
-            exit(EXIT_ERROR);
+            exit(ERR_ELF_SEG_LOAD);
         }
 
         // It means that this is the bss segment, we init it at 0
@@ -96,7 +100,6 @@ void *load_segments(int fd_lib, elf64_phdr **p_headers, int nb_phdr, uint64_t si
 
         // Adjust the start of the segment if it is not aligned
         if (extra_offset != 0x00) {
-            // TRY PROTECT NONE
             for (uint64_t i = 0; i < extra_offset; i++) {
                 *((char *) addr + i) = 0x00;
             }

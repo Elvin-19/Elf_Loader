@@ -1,28 +1,23 @@
 /**
  * @file ehdr.h
- * @brief Definitions used to manage ELF Executable Header
+ * @brief Definitions used to parse and print ELF executable headers
  */
 
 #pragma once
 
-#include "common.h"
+#include "elf64.h"
 
-typedef struct {
-    unsigned char ident[16];
-    uint16_t type;
-    uint16_t machine;
-    uint32_t version;
-    uint64_t entry;
-    uint64_t phoff;
-    uint64_t shoff;
-    uint32_t flags;
-    uint16_t ehsize;   // Exec header size
-    uint16_t phentsize;
-    uint16_t phnum;
-    uint16_t shentsize;
-    uint16_t shnum;
-    uint16_t shstrndx;
-} elf64_ehdr;
-
+/**
+ * @fn ehdr_parse
+ * @brief Parse the ELF64 executable header
+ * @param lib_fd File descriptor of the ELF file
+ * @return elf64_ehdr structure containing the parsed header
+ */
 extern elf64_ehdr ehdr_parse(int lib_fd);
+
+/**
+ * @fn ehdr_print
+ * @brief Print the ELF64 executable header
+ * @param header Pointer to the elf64_ehdr structure to print
+ */
 extern void ehdr_print(elf64_ehdr *header);

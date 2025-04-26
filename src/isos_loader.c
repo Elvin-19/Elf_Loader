@@ -11,12 +11,8 @@
 #include <unistd.h>
 
 #include "common.h"
-#include "ehdr.h"
 #include "isos_loader.h"
 #include "my_dl.h"
-#include "phdr.h"
-#include "relocation.h"
-#include "segments_loader.h"
 
 const char *argp_program_version = "isos_loader (MAUBERT Elvin) 1.0";
 

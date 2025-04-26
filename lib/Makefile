@@ -1,6 +1,7 @@
 CC = gcc
 CFLAGS = -fPIC -nostdlib -fvisibility=hidden
 LDFLAGS = -shared
+LINKINGFLAGS = -Wl,-e,entry
 TARGET = libfoobar.so
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
@@ -8,8 +9,7 @@ OBJS = $(SRCS:.c=.o)
 all: $(TARGET)
 
 $(TARGET): $(SRCS)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -Wl,-e,entry
-
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LINKINGFLAGS)
 
 clean:
 	rm -f $(OBJS) $(TARGET)
