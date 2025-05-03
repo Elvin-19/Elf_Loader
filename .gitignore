@@ -4,3 +4,4 @@ isos_loader
 doc/*
 lib/*.so
 .clang-format
+lib/encryption

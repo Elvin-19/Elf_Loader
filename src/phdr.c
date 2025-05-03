@@ -49,7 +49,6 @@ uint64_t phdr_parse(int lib_fd, int nb_load_seg, elf64_ehdr *ehdr, elf64_phdr **
             exit(ERR_ELF_PHDR);
         }
         if (phdr->type == PT_LOAD) {
-            printf("--------------------------%d\n", i);
             phdr_tab[i] = phdr;
 
             // First program header

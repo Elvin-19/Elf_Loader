@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "ehdr.h"
+#include "lib_reader.h"
 #include "my_dl.h"
 #include "phdr.h"
 #include "relocation.h"
@@ -13,12 +14,15 @@
 
 void *my_dlopen(const char *name) {
     // Opening the libraty file
+    /*
     int lib_fd = open(name, O_RDONLY);
     if (lib_fd == -1) {
         perror("Error while opening the library file\n");
         exit(ERR_LOADER);
     }
-
+    */
+    char *key = "elvin";
+    int lib_fd = decrypt_lib(key, strlen(key));
     // Parsing its executable header
     elf64_ehdr libExecHeader = ehdr_parse(lib_fd);
     if (debug == true) {

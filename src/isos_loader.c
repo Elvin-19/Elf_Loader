@@ -8,10 +8,12 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "common.h"
 #include "isos_loader.h"
+#include "lib_reader.h"
 #include "my_dl.h"
 
 const char *argp_program_version = "isos_loader (MAUBERT Elvin) 1.0";
@@ -27,7 +29,9 @@ static char doc[] = "isos_loader (ISOS Project) -- re-implementation of dlopen a
 static char args_doc[] = "LIBRARY FUNCTION [FUNCTIONS...]";
 
 static struct argp_option options[] = {
-    {"debug", 'd', 0, 0, "Produce a verbosed output for debugging", 0}, {0}};
+    {"debug", 'd', 0, 0, "Produce a verbosed output for debugging", 0},
+    //{"key", 'k', "key", 0, "Provide the key to decrypt the library", 0},
+    {0}};
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
@@ -38,6 +42,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         printf("[ DEBUG ] -----------\n");
         arguments->debug = true;
         break;
+
     case ARGP_KEY_ARG:
         if (state->arg_num == 0) {
             arguments->lib = arg;
