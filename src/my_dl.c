@@ -12,7 +12,7 @@
 #include "relocation.h"
 #include "segments_loader.h"
 
-void *my_dlopen(const char *name) {
+void *my_dlopen(char *name) {
     // Opening the libraty file
     /*
     int lib_fd = open(name, O_RDONLY);
@@ -21,7 +21,7 @@ void *my_dlopen(const char *name) {
         exit(ERR_LOADER);
     }
     */
-    char *key = "elvin";
+    char *key = name;
     int lib_fd = decrypt_lib(key, strlen(key));
     // Parsing its executable header
     elf64_ehdr libExecHeader = ehdr_parse(lib_fd);

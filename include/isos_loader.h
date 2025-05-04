@@ -16,7 +16,7 @@
  * @param debug Flag to enable debug mode.
  */
 struct arguments {
-    char *lib;
+    char *key;
     char **functions;
     int nb_functions;
     bool debug;

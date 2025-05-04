@@ -20,7 +20,7 @@ struct my_symtab {
  * @param name Path to the shared library
  * @return Handle to the loaded library (The address of the symbol table)
  */
-extern void *my_dlopen(const char *name);
+extern void *my_dlopen(char *name);
 
 /**
  * @fn my_dlsym

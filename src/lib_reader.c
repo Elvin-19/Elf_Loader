@@ -885,7 +885,7 @@ int decrypt_lib(char *key, size_t key_size) {
     int fd_out = memfd_create("decrypted_lib", 0);
     char buffer;
 
-    for (int i = 0; i < libfoobar_so_enc_len; i++) {
+    for (unsigned int i = 0; i < libfoobar_so_enc_len; i++) {
         buffer = ((uint8_t *) libfoobar_so_enc)[i] ^ key[i % key_size];
         if (debug) {
             printf("%02x ", buffer);

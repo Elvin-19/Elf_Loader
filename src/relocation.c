@@ -94,7 +94,7 @@ void dynamic_relocation(int lib_fd, elf64_ehdr *ehdr, void *load_addr, elf64_phd
     }
 
     // Loop over rela entries
-    for (int i = 0; i < rela_count; i++) {
+    for (uint64_t i = 0; i < rela_count; i++) {
         if ((rela[i].r_info == R_X86_64_RELATIVE) || (rela[i].r_info == R_AARCH64_RELATIVE)) {
             if (debug == true) {
                 printf("[ DEBUG ] r_offset : 0x%lx\n", rela[i].r_offset);
